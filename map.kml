@@ -1,0 +1,616 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>としまえんあたりの スタンプラリー 2025</name>
+    <description/>
+    <Style id="icon-1499-0288D1-labelson-nodesc">
+      <IconStyle>
+        <color>ffd18802</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+      </IconStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <Style id="icon-1507-0288D1-labelson-nodesc">
+      <IconStyle>
+        <color>ffd18802</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+      </IconStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <Style id="icon-1517-C2185B-labelson-nodesc">
+      <IconStyle>
+        <color>ff5b18c2</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+      </IconStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <Style id="icon-1526-0288D1-labelson-nodesc">
+      <IconStyle>
+        <color>ffd18802</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+      </IconStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <Style id="icon-1530-C2185B-labelson-nodesc">
+      <IconStyle>
+        <color>ff5b18c2</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+      </IconStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <Style id="icon-1534-F9A825-labelson-nodesc">
+      <IconStyle>
+        <color>ff25a8f9</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+      </IconStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <Style id="icon-1568-757575-labelson-nodesc">
+      <IconStyle>
+        <color>ff757575</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+      </IconStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <Style id="icon-1577-C2185B-labelson-nodesc">
+      <IconStyle>
+        <color>ff5b18c2</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+      </IconStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <Style id="icon-1587-558B2F-labelson-nodesc">
+      <IconStyle>
+        <color>ff2f8b55</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+      </IconStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <Style id="icon-1637-0288D1-labelson-nodesc">
+      <IconStyle>
+        <color>ffd18802</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+      </IconStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <Style id="icon-1640-C2185B-labelson-nodesc">
+      <IconStyle>
+        <color>ff5b18c2</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+      </IconStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <Style id="icon-1651-C2185B-labelson-nodesc">
+      <IconStyle>
+        <color>ff5b18c2</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+      </IconStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <Style id="icon-1652-757575-labelson-nodesc">
+      <IconStyle>
+        <color>ff757575</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+      </IconStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <Style id="icon-1684-558B2F-labelson-nodesc">
+      <IconStyle>
+        <color>ff2f8b55</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+      </IconStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <Style id="icon-1684-FF5252-labelson-nodesc">
+      <IconStyle>
+        <color>ff5252ff</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+      </IconStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <Style id="icon-1716-757575-labelson-nodesc">
+      <IconStyle>
+        <color>ff757575</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+      </IconStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <Style id="icon-1762-FF5252-labelson-nodesc">
+      <IconStyle>
+        <color>ff5252ff</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+      </IconStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <Style id="icon-1811-757575-labelson-nodesc">
+      <IconStyle>
+        <color>ff757575</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+      </IconStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <Style id="icon-1835-C2185B-labelson-nodesc">
+      <IconStyle>
+        <color>ff5b18c2</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+      </IconStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <Style id="icon-1879-C2185B-labelson-nodesc">
+      <IconStyle>
+        <color>ff5b18c2</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+      </IconStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <Folder>
+      <name>カフェ</name>
+      <Placemark>
+        <name>01 gak</name>
+        <styleUrl>#icon-1534-F9A825-labelson-nodesc</styleUrl>
+        <Point>
+          <coordinates>
+            139.6388342,35.7604096,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>10 志村電機珈琲焙煎所</name>
+        <styleUrl>#icon-1534-F9A825-labelson-nodesc</styleUrl>
+        <Point>
+          <coordinates>
+            139.6477181,35.7474094,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>17 titi cafe</name>
+        <styleUrl>#icon-1534-F9A825-labelson-nodesc</styleUrl>
+        <Point>
+          <coordinates>
+            139.6484573,35.74395,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>38 猫カフェ えこねこ</name>
+        <styleUrl>#icon-1534-F9A825-labelson-nodesc</styleUrl>
+        <Point>
+          <coordinates>
+            139.6556822,35.7377344,0
+          </coordinates>
+        </Point>
+      </Placemark>
+    </Folder>
+    <Folder>
+      <name>お食事処</name>
+      <Placemark>
+        <name>02 瀬戸田レモンサワーと肉巻き野菜串 NERIMARU</name>
+        <styleUrl>#icon-1879-C2185B-labelson-nodesc</styleUrl>
+        <Point>
+          <coordinates>
+            139.6440077,35.7535843,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>04 食堂まほろ</name>
+        <styleUrl>#icon-1879-C2185B-labelson-nodesc</styleUrl>
+        <Point>
+          <coordinates>
+            139.642304,35.7517241,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>11 手打ち蕎麦と酒肴 いちだい</name>
+        <styleUrl>#icon-1577-C2185B-labelson-nodesc</styleUrl>
+        <Point>
+          <coordinates>
+            139.6477798,35.7466846,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name><![CDATA[19 Bar U'Jadde]]></name>
+        <styleUrl>#icon-1577-C2185B-labelson-nodesc</styleUrl>
+        <Point>
+          <coordinates>
+            139.64825,35.7437297,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>20 としまえん多喜</name>
+        <styleUrl>#icon-1879-C2185B-labelson-nodesc</styleUrl>
+        <Point>
+          <coordinates>
+            139.6481771,35.7436779,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>21 日本酒処 はち屋</name>
+        <styleUrl>#icon-1879-C2185B-labelson-nodesc</styleUrl>
+        <Point>
+          <coordinates>
+            139.6487024,35.742824,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>22 笑天やきとり 一輝</name>
+        <styleUrl>#icon-1879-C2185B-labelson-nodesc</styleUrl>
+        <Point>
+          <coordinates>
+            139.6484882,35.7426966,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>25 タッポスト チャオラ</name>
+        <styleUrl>#icon-1651-C2185B-labelson-nodesc</styleUrl>
+        <Point>
+          <coordinates>
+            139.6487054,35.7426835,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>26 夢民家</name>
+        <styleUrl>#icon-1879-C2185B-labelson-nodesc</styleUrl>
+        <Point>
+          <coordinates>
+            139.6489356,35.7427462,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>27 韓国料理 兄弟チキン</name>
+        <styleUrl>#icon-1879-C2185B-labelson-nodesc</styleUrl>
+        <Point>
+          <coordinates>
+            139.6489196,35.7427499,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>28 亀寿司</name>
+        <styleUrl>#icon-1835-C2185B-labelson-nodesc</styleUrl>
+        <Point>
+          <coordinates>
+            139.6492828,35.7427216,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>30 カーサ・デル・ヴィアジャトーレ</name>
+        <styleUrl>#icon-1577-C2185B-labelson-nodesc</styleUrl>
+        <Point>
+          <coordinates>
+            139.6492466,35.7411727,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>31 豊島園の夕陽</name>
+        <styleUrl>#icon-1879-C2185B-labelson-nodesc</styleUrl>
+        <Point>
+          <coordinates>
+            139.6491957,35.7409796,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>32 111</name>
+        <styleUrl>#icon-1640-C2185B-labelson-nodesc</styleUrl>
+        <Point>
+          <coordinates>
+            139.6491916,35.7409443,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>33 THE GIANT STEP</name>
+        <styleUrl>#icon-1530-C2185B-labelson-nodesc</styleUrl>
+        <Point>
+          <coordinates>
+            139.6489754,35.7407929,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>34 アーバン・オアシス・タナカ</name>
+        <styleUrl>#icon-1577-C2185B-labelson-nodesc</styleUrl>
+        <Point>
+          <coordinates>
+            139.6489775,35.7407439,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>37 口水食堂</name>
+        <styleUrl>#icon-1577-C2185B-labelson-nodesc</styleUrl>
+        <Point>
+          <coordinates>
+            139.6566381,35.7400744,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>39 metro diner.</name>
+        <styleUrl>#icon-1517-C2185B-labelson-nodesc</styleUrl>
+        <Point>
+          <coordinates>
+            139.6367281,35.7409496,0
+          </coordinates>
+        </Point>
+      </Placemark>
+    </Folder>
+    <Folder>
+      <name>テイクアウト（食品）</name>
+      <Placemark>
+        <name>06 セブンイレブン 練馬春日町５丁目店</name>
+        <styleUrl>#icon-1684-FF5252-labelson-nodesc</styleUrl>
+        <Point>
+          <coordinates>
+            139.639986,35.749891,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>07 コンビニエンスストア髙橋</name>
+        <styleUrl>#icon-1684-FF5252-labelson-nodesc</styleUrl>
+        <Point>
+          <coordinates>
+            139.6428834,35.7484989,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>08 わだぱん</name>
+        <styleUrl>#icon-1684-FF5252-labelson-nodesc</styleUrl>
+        <Point>
+          <coordinates>
+            139.6432365,35.7483629,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>09 株式会社佃宝 本店</name>
+        <styleUrl>#icon-1684-FF5252-labelson-nodesc</styleUrl>
+        <Point>
+          <coordinates>
+            139.6470225,35.7480265,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>13 Bis</name>
+        <styleUrl>#icon-1762-FF5252-labelson-nodesc</styleUrl>
+        <Point>
+          <coordinates>
+            139.6479464,35.7460518,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>36 かすたねっと</name>
+        <styleUrl>#icon-1762-FF5252-labelson-nodesc</styleUrl>
+        <Point>
+          <coordinates>
+            139.6559314,35.7413037,0
+          </coordinates>
+        </Point>
+      </Placemark>
+    </Folder>
+    <Folder>
+      <name>物販</name>
+      <Placemark>
+        <name>03 木の実植物店</name>
+        <styleUrl>#icon-1587-558B2F-labelson-nodesc</styleUrl>
+        <Point>
+          <coordinates>
+            139.640517,35.7522281,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>35 デュアン漢方薬局</name>
+        <styleUrl>#icon-1684-558B2F-labelson-nodesc</styleUrl>
+        <Point>
+          <coordinates>
+            139.6490142,35.7394904,0
+          </coordinates>
+        </Point>
+      </Placemark>
+    </Folder>
+    <Folder>
+      <name>店内サービス</name>
+      <Placemark>
+        <name>05 シリウス ラボ</name>
+        <styleUrl>#icon-1499-0288D1-labelson-nodesc</styleUrl>
+        <Point>
+          <coordinates>
+            139.6555741,35.7517155,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>14 マンガスタンド</name>
+        <styleUrl>#icon-1526-0288D1-labelson-nodesc</styleUrl>
+        <Point>
+          <coordinates>
+            139.648806,35.7461403,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>16 SNIP*SNIP</name>
+        <styleUrl>#icon-1507-0288D1-labelson-nodesc</styleUrl>
+        <Point>
+          <coordinates>
+            139.648497,35.7443803,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>29 BBQ Records</name>
+        <styleUrl>#icon-1637-0288D1-labelson-nodesc</styleUrl>
+        <Point>
+          <coordinates>
+            139.6490009,35.7421077,0
+          </coordinates>
+        </Point>
+      </Placemark>
+    </Folder>
+    <Folder>
+      <name>その他施設</name>
+      <Placemark>
+        <name>12 練馬城址公園</name>
+        <styleUrl>#icon-1652-757575-labelson-nodesc</styleUrl>
+        <Point>
+          <coordinates>
+            139.6426658,35.7460477,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>15 スタジオツアー東京</name>
+        <styleUrl>#icon-1568-757575-labelson-nodesc</styleUrl>
+        <Point>
+          <coordinates>
+            139.6460909,35.745183,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>18 豊島園 庭の湯</name>
+        <styleUrl>#icon-1811-757575-labelson-nodesc</styleUrl>
+        <Point>
+          <coordinates>
+            139.6481385,35.7438303,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>23 練馬区立 向山庭園</name>
+        <styleUrl>#icon-1652-757575-labelson-nodesc</styleUrl>
+        <Point>
+          <coordinates>
+            139.6468678,35.7421448,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>24 豊島園駅</name>
+        <styleUrl>#icon-1716-757575-labelson-nodesc</styleUrl>
+        <Point>
+          <coordinates>
+            139.6479838,35.7425993,0
+          </coordinates>
+        </Point>
+      </Placemark>
+    </Folder>
+  </Document>
+</kml>

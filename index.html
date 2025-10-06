@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>としまえんあたりの スタンプラリー 2025 </title>
+
+  <!-- ✅ 検索エンジンにインデックスさせない設定 -->
+  <meta name="robots" content="noindex, nofollow">
+
+  <style>
+    html, body, #map { height: 100%; margin: 0; padding: 0; }
+  </style>
+
+  <script>
+    // ✅ POI（飲食店や施設など）を非表示にするスタイル
+    const HIDE_POI_STYLE = [
+      { featureType: "poi", stylers: [{ visibility: "off" }] },
+      { featureType: "transit", stylers: [{ visibility: "off" }] },
+      { elementType: "labels.icon", stylers: [{ visibility: "off" }] }
+    ];
+
+    async function initMap() {
+      const { Map } = await google.maps.importLibrary("maps");
+
+      // ✅ 初期位置を「西武線 豊島園駅」に設定
+      const toshimaen = { lat: 35.7416, lng: 139.6515 };
+
+      const map = new Map(document.getElementById("map"), {
+        center: toshimaen,
+        zoom: 16,
+        styles: HIDE_POI_STYLE,
+        streetViewControl: false,
+        mapTypeControl: false,
+        fullscreenControl: true,
+      });
+
+      // ✅ 同階層の map.kml を読み込み
+      const kmlLayer = new google.maps.KmlLayer({
+        url: window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '/map.kml'),
+        map: map,
+        preserveViewport: false,
+        suppressInfoWindows: false
+      });
+    }
+    window.initMap = initMap;
+  </script>
+</head>
+<body>
+  <div id="map"></div>
+
+  <!-- ✅ あなたのGoogle Maps JavaScript APIキーをここに入れてください -->
+  <script async
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDYJo3DLtUfuKHFUTc7c-HqwgB4H2e3p3U&callback=initMap">
+  </script>
+</body>
+</html>
