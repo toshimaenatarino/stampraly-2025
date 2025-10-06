@@ -46,56 +46,6 @@
       });
     }
 
-    async function initMap() {
-      const { Map } = await google.maps.importLibrary("maps");
-
-      // 初期中心：西武線「豊島園駅」
-      map = new Map(document.getElementById("map"), {
-        center: { lat: 35.7416, lng: 139.6515 },
-        zoom: 16,
-        styles: HIDE_POI_STYLE,
-        streetViewControl: false,
-        mapTypeControl: false,
-        fullscreenControl: true,
-        gestureHandling: "greedy",
-      });
-
-      info = new google.maps.InfoWindow();
-
-      // ---- KML/KMZ レイヤ読込（KMZ → 失敗でKML） ----
-      const ver = Date.now().toString(); // キャッシュバスター
-      const kmzUrl = `${BASE_URL}map.kmz?v=${ver}`; // map_2510062042.kmz
-      const kmlUrl = `${BASE_URL}map.kml?v=${ver}`; // map_2510062042.kml
-
-      function addLayer(url, onStatus) {
-        const layer = new google.maps.KmlLayer({
-          url,
-          map,
-          preserveViewport: false,
-          suppressInfoWindows: true, // KML標準の吹き出しは抑止（自前表示するため）
-        });
-        layer.addListener("status_changed", () => {
-          const st = layer.getStatus && layer.getStatus();
-          console.log("KML status:", st, "url:", url);
-          onStatus?.(st, layer);
-        });
-        // クリックで Places 詳細を出す
-        layer.addListener("click", onKmlClick);
-        return layer;
-      }
-
-      let active = addLayer(kmzUrl, (st, l) => {
-        if (st !== "OK") {
-          l.setMap(null);
-          active = addLayer(kmlUrl, (st2) => {
-            if (st2 !== "OK") {
-              console.warn("KML/KMZ 読み込み失敗:", st2);
-            }
-          });
-        }
-      });
-    }
-
     // --- KMLのクリック → Place ID優先でPlaces詳細、無ければ近傍検索、最終的にKML説明にフォールバック ---
     function onKmlClick(e) {
       const rawName = e.featureData?.name || "場所";
@@ -220,15 +170,60 @@
       return `<div class="iw"><div class="name">${esc(name)}</div>${descHtml ? `<div>${descHtml}</div>` : ""}</div>`;
     }
 
-    // グローバル公開
-    window.initMap = initMap;
+    // ここから地図初期化（グローバル関数宣言; callback が見つかるように function 宣言を使う）
+    function initMap() {
+      // 初期中心：西武線「豊島園駅」
+      map = new google.maps.Map(document.getElementById("map"), {
+        center: { lat: 35.7416, lng: 139.6515 },
+        zoom: 16,
+        styles: HIDE_POI_STYLE,
+        streetViewControl: false,
+        mapTypeControl: false,
+        fullscreenControl: true,
+        gestureHandling: "greedy",
+      });
+
+      info = new google.maps.InfoWindow();
+
+      // ---- KML/KMZ レイヤ読込（KMZ → 失敗でKML） ----
+      const ver = Date.now().toString(); // キャッシュバスター
+      const kmzUrl = `${BASE_URL}map.kmz?v=${ver}`; // map_2510062042.kmz
+      const kmlUrl = `${BASE_URL}map.kml?v=${ver}`; // map_2510062042.kml
+
+      function addLayer(url, onStatus) {
+        const layer = new google.maps.KmlLayer({
+          url,
+          map,
+          preserveViewport: false,
+          suppressInfoWindows: true, // KML標準の吹き出しは抑止（自前表示するため）
+        });
+        layer.addListener("status_changed", () => {
+          const st = layer.getStatus && layer.getStatus();
+          console.log("KML status:", st, "url:", url);
+          onStatus && onStatus(st, layer);
+        });
+        // クリックで Places 詳細を出す
+        layer.addListener("click", onKmlClick);
+        return layer;
+      }
+
+      let active = addLayer(kmzUrl, (st, l) => {
+        if (st !== "OK") {
+          l.setMap(null);
+          active = addLayer(kmlUrl, (st2) => {
+            if (st2 !== "OK") {
+              console.warn("KML/KMZ 読み込み失敗:", st2);
+            }
+          });
+        }
+      });
+    }
   </script>
 </head>
 <body>
   <div id="map"></div>
 
-  <!-- あなたの Google Maps JavaScript API キーを設定（リファラに https://toshimaenatarino.github.io/* を許可）
-       ※ Places を使うため libraries=places を必ず付ける -->
+  <!-- ※ Places を使うため libraries=places を必ず付ける。callback は上の function initMap を呼ぶ -->
   <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDYJo3DLtUfuKHFUTc7c-HqwgB4H2e3p3U&callback=initMap&v=weekly&libraries=places"></script>
 </body>
 </html>
