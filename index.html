@@ -83,9 +83,9 @@
     // --- KMLのクリック → Place ID優先でPlaces詳細、無ければ近傍検索、最終的にKML説明にフォールバック ---
     function onKmlClick(e) {
       //何が来ているかを可視化（デバッグログ）
-      console.debug("[KML click] name=", kmlName);
-      console.debug("[KML click] hasHTML=", !!html, "length=", html?.length);
-      console.debug("[KML click] desc(first100)=", (desc||"").slice(0,100));
+      //console.debug("[KML click] name=", kmlName);
+      //console.debug("[KML click] hasHTML=", !!html, "length=", html?.length);
+      //console.debug("[KML click] desc(first100)=", (desc||"").slice(0,100));
 
       const kmlName = e.featureData?.name || "場所";
       const desc    = e.featureData?.description || "";
