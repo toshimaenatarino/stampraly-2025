@@ -82,10 +82,15 @@
 
     // --- KMLのクリック → Place ID優先でPlaces詳細、無ければ近傍検索、最終的にKML説明にフォールバック ---
     function onKmlClick(e) {
-      const kmlName = e.featureData?.name || "場所";  // ← KML(=KMZ)側のピン名を保持
-      const desc = e.featureData?.description || "";         // KMLの<description> （あれば）
-      const html = e.featureData?.infoWindowHtml || "";      // BalloonStyleで生成されたHTML
-      const pos  = e.latLng;
+      //何が来ているかを可視化（デバッグログ）
+      console.debug("[KML click] name=", kmlName);
+      console.debug("[KML click] hasHTML=", !!html, "length=", html?.length);
+      console.debug("[KML click] desc(first100)=", (desc||"").slice(0,100));
+
+      const kmlName = e.featureData?.name || "場所";
+      const desc    = e.featureData?.description || "";
+      const html    = e.featureData?.infoWindowHtml || "";
+      const pos     = e.latLng;
 
       info.setContent(`<div class="iw">読み込み中…</div>`);
       info.setPosition(pos);
@@ -93,11 +98,10 @@
 
       const service = new google.maps.places.PlacesService(map);
 
-      // 1) Balloon内に埋めた data-place_id から取得（推奨）
-      const pid = extractPlaceId(html);
+      const pid = extractPlaceId(html, kmlName, desc);
       if (pid) {
-        getPlaceDetailsById(service, pid, desc, kmlName); // ← KML名を渡す
-        return;
+        getPlaceDetailsById(service, pid, desc, kmlName);
+      return;
       }
 
       // 2) Place IDが無いピン → 名称を使って近傍テキスト検索 → 詳細
@@ -139,16 +143,34 @@
       );
     }
 
-    function extractPlaceId(infoWindowHtml) {
-      if (!infoWindowHtml) return "";
-      // 1) 正規表現（ハイフン/アンダースコア両対応）
+    function extractPlaceId(infoWindowHtml, kmlName, kmlDesc) {
+      // 0) 正規表現ヘルパ
+      const pickFromToken = (s) => {
+      if (!s) return "";
+      const m = s.match(/\[PID:([A-Za-z0-9_\-]+)\]/); // URL-safe文字のみ
+      return m ? m[1] : "";
+      };
+
+      // 1) infoWindowHtml の data-*（残っていれば最優先）
+      if (infoWindowHtml) {
       let m = infoWindowHtml.match(/data-place[-_]id\s*=\s*["']([^"']+)["']/i);
-      if (m && m[1]) return m[1];
-      // 2) DOM パース（保険）
+      if (m?.[1]) return m[1];
       const div = document.createElement('div');
       div.innerHTML = infoWindowHtml;
       const node = div.querySelector('.pid[data-place-id], .pid[data-place_id]');
-      return node?.getAttribute('data-place-id') || node?.getAttribute('data-place_id') || '';
+      const pid = node?.getAttribute('data-place-id') || node?.getAttribute('data-place_id') || '';
+      if (pid) return pid;
+      }
+
+      // 2) KML の name に [PID:...] があれば使う
+      const pidFromName = pickFromToken(kmlName);
+      if (pidFromName) return pidFromName;
+
+      // 3) KML の description に [PID:...] があれば使う
+      const pidFromDesc = pickFromToken(kmlDesc);
+      if (pidFromDesc) return pidFromDesc;
+
+      return "";
     }
 
 
