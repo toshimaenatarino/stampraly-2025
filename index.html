@@ -18,14 +18,14 @@
   </style>
 
   <script>
-    // --- 既存POIを消すスタイル ---
+    // 既存POIを消すスタイル
     const HIDE_POI_STYLE = [
       { featureType: "poi", stylers: [{ visibility: "off" }] },
       { featureType: "transit", stylers: [{ visibility: "off" }] },
       { elementType: "labels.icon", stylers: [{ visibility: "off" }] }
     ];
 
-    // GitHub Pages のベースURL
+    // GitHub Pages の公開ベースURL（固定）
     const BASE_URL = "https://toshimaenatarino.github.io/stampraly-2025/";
 
     let map, info;
@@ -56,13 +56,14 @@
           url,
           map,
           preserveViewport: false,
-          suppressInfoWindows: true, // KML標準の吹き出しは抑止
+          suppressInfoWindows: true, // KML標準の吹き出しは抑止（自前表示するため）
         });
         layer.addListener("status_changed", () => {
           const st = layer.getStatus && layer.getStatus();
           console.log("KML status:", st, "url:", url);
           onStatus?.(st, layer);
         });
+        // クリックで Places 詳細を出す
         layer.addListener("click", onKmlClick);
         return layer;
       }
@@ -79,11 +80,11 @@
       });
     }
 
-    // --- KMLクリック時：Place ID優先でPlaces詳細、無ければ近傍検索 ---
+    // --- KMLのクリック → Place ID優先でPlaces詳細、無ければ近傍検索、最終的にKML説明にフォールバック ---
     function onKmlClick(e) {
-      const kmlName = e.featureData?.name || "場所";  // ← KMLのnameを保持
-      const desc = e.featureData?.description || "";
-      const html = e.featureData?.infoWindowHtml || "";
+      const kmlName = e.featureData?.name || "場所";  // ← KML(=KMZ)側のピン名を保持
+      const desc = e.featureData?.description || "";         // KMLの<description> （あれば）
+      const html = e.featureData?.infoWindowHtml || "";      // BalloonStyleで生成されたHTML
       const pos  = e.latLng;
 
       info.setContent(`<div class="iw">読み込み中…</div>`);
@@ -92,14 +93,14 @@
 
       const service = new google.maps.places.PlacesService(map);
 
-      // Balloon内のdata-place_idを抽出
+      // 1) Balloon内に埋めた data-place_id から取得（推奨）
       const pid = extractPlaceId(html);
       if (pid) {
-        getPlaceDetailsById(service, pid, desc, kmlName);
+        getPlaceDetailsById(service, pid, desc, kmlName); // ← KML名を渡す
         return;
       }
 
-      // Place IDがない場合は名称検索
+      // 2) Place IDが無いピン → 名称を使って近傍テキスト検索 → 詳細
       service.textSearch(
         { query: kmlName, location: pos, radius: 250 },
         (results, status) => {
@@ -112,18 +113,24 @@
       );
     }
 
-    // --- Place IDで詳細取得 ---
+    // Place IDで詳細取得して表示
     function getPlaceDetailsById(service, placeId, descHtml, kmlDisplayName) {
       service.getDetails(
         {
           placeId,
           fields: [
-            "name","rating","formatted_address","formatted_phone_number",
-            "opening_hours","website","url"
+            "name",
+            "rating",
+            "formatted_address",
+            "formatted_phone_number",
+            "opening_hours",
+            "website",
+            "url",
           ],
         },
         (place, status) => {
           if (status === google.maps.places.PlacesServiceStatus.OK && place) {
+            // ← タイトル表示は KML 名を優先
             info.setContent(renderPlaceHtml(place, descHtml, kmlDisplayName));
           } else {
             info.setContent(renderFallbackHtml(kmlDisplayName, descHtml));
@@ -132,23 +139,27 @@
       );
     }
 
-    // --- Balloon HTML から data-place_id を取得 ---
+    // Balloon HTML から data-place_id を取り出す
     function extractPlaceId(infoWindowHtml) {
       if (!infoWindowHtml) return "";
       const m = infoWindowHtml.match(/data-place_id\s*=\s*["']([^"']+)["']/i);
       return m ? m[1] : "";
+      // DOMパースで厳密にやる場合は以下でもOK
+      // const div = document.createElement('div');
+      // div.innerHTML = infoWindowHtml;
+      // const node = div.querySelector('.pid[data-place_id]');
+      // return node?.getAttribute('data-place_id') || '';
     }
 
-    // --- 吹き出し生成：KML名をタイトル、Places詳細を本文 ---
+    // Places 詳細 + KML説明をまとめて描画
     function renderPlaceHtml(p, descHtml, kmlDisplayName) {
       const lines = [];
       lines.push(`<div class="iw">`);
+      // 表示タイトルは KML 名を優先。必要なら後段で “(Google名: …)” を併記できます。
       const displayName = kmlDisplayName || p.name || "";
       lines.push(`<div class="name">${esc(displayName)}</div>`);
-      // ※両方出したい場合は以下を有効化
-      // if (p.name && kmlDisplayName && p.name !== kmlDisplayName)
-      //   lines.push(`<div class="meta">(Google名: ${esc(p.name)})</div>`);
-
+      // もし両方見せたい場合は下行のコメントを外してください：
+      // if (p.name && kmlDisplayName && p.name !== kmlDisplayName) lines.push(`<div class="meta">(Google名: ${esc(p.name)})</div>`);
       if (p.rating) lines.push(`<div class="meta">★ ${Number(p.rating).toFixed(1)} / 5</div>`);
       if (p.formatted_address) lines.push(`<div>${esc(p.formatted_address)}</div>`);
       if (p.formatted_phone_number) lines.push(`<div>☎ ${esc(p.formatted_phone_number)}</div>`);
@@ -157,34 +168,32 @@
         for (const w of p.opening_hours.weekday_text) lines.push(`${esc(w)}<br>`);
         lines.push(`</div></details>`);
       }
-      if (p.website)
-        lines.push(`<div>Web: <a href="${p.website}" target="_blank" rel="noopener">${p.website}</a></div>`);
-      if (p.url)
-        lines.push(`<div><a href="${p.url}" target="_blank" rel="noopener">Google マップで開く</a></div>`);
+      if (p.website) lines.push(`<div>Web: <a href="${p.website}" target="_blank" rel="noopener">${p.website}</a></div>`);
+      if (p.url) lines.push(`<div><a href="${p.url}" target="_blank" rel="noopener">Google マップで開く</a></div>`);
       if (descHtml) lines.push(`<hr>${descHtml}`);
       lines.push(`</div>`);
       return lines.join("");
     }
 
-    // --- KML名+説明のみ表示（フォールバック） ---
+    // フォールバック（KMLの name/description のみ）
     function renderFallbackHtml(name, descHtml) {
       return `<div class="iw"><div class="name">${esc(name)}</div>${descHtml ? `<div>${descHtml}</div>` : ""}</div>`;
     }
 
-    // --- エスケープ ---
+    // 簡易エスケープ
     function esc(s) {
-      return String(s).replace(/[&<>"']/g, m => ({
-        '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
-      }[m]));
+      return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
     }
 
+    // グローバル公開
     window.initMap = initMap;
   </script>
 </head>
 <body>
   <div id="map"></div>
 
-  <!-- あなたの Google Maps JavaScript API キーを設定 -->
+  <!-- あなたの Google Maps JavaScript API キーを設定（リファラに https://toshimaenatarino.github.io/* を許可）
+       ※ Places を使うため libraries=places を必ず付ける -->
   <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDYJo3DLtUfuKHFUTc7c-HqwgB4H2e3p3U&callback=initMap&v=weekly&libraries=places"></script>
 </body>
 </html>
