@@ -3,64 +3,82 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>としまえんあたりの スタンプラリー 2025 </title>
+  <title>としまえんあたりの スタンプラリー 2025</title>
 
-  <!-- ✅ 検索エンジンにインデックスさせない設定 -->
-  <meta name="robots" content="noindex, nofollow">
+  <!-- 検索エンジンにインデックスさせない -->
+  <meta name="robots" content="noindex, nofollow" />
 
   <style>
     html, body, #map { height: 100%; margin: 0; padding: 0; }
   </style>
 
   <script>
-    // ✅ POI（飲食店や施設など）を非表示にするスタイル
+    // 既存POIを消すスタイル
     const HIDE_POI_STYLE = [
       { featureType: "poi", stylers: [{ visibility: "off" }] },
       { featureType: "transit", stylers: [{ visibility: "off" }] },
       { elementType: "labels.icon", stylers: [{ visibility: "off" }] }
     ];
 
+    // GitHub Pages 上の公開URL（固定）
+    const BASE_URL = "https://toshimaenatarino.github.io/stampraly-2025/";
+
     async function initMap() {
       const { Map } = await google.maps.importLibrary("maps");
 
-      // ✅ 初期位置を「西武線 豊島園駅」に設定
-      const toshimaen = { lat: 35.7416, lng: 139.6515 };
+      // 初期中心：西武線「豊島園駅」
+      const center = { lat: 35.7416, lng: 139.6515 };
 
       const map = new Map(document.getElementById("map"), {
-        center: toshimaen,
+        center,
         zoom: 16,
         styles: HIDE_POI_STYLE,
         streetViewControl: false,
         mapTypeControl: false,
         fullscreenControl: true,
+        gestureHandling: "greedy",
       });
 
-      // ✅ 同階層の map.kmz を読み込み(kmlは読み込まない)
-//      const kmlLayer = new google.maps.KmlLayer({
-//        url: window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '/map.kml'),
-//        map: map,
-//        preserveViewport: false,
-//        suppressInfoWindows: false
-//      });
+      // ---- KML/KMZ レイヤ読込（KMZ → 失敗時にKMLへフォールバック）----
+      const version = Date.now().toString(); // キャッシュバスター
+      const kmzUrl = `${BASE_URL}map.kmz?v=${version}`;
+      const kmlUrl = `${BASE_URL}map.kml?v=${version}`;
 
-      const kmlLayer = new google.maps.KmlLayer({
-        url: location.origin + location.pathname.replace(/\/[^/]*$/, '/map.kmz'),
-        map,
-        preserveViewport: false,
-        suppressInfoWindows: false
+      function addKmlLayer(url, onStatus) {
+        const layer = new google.maps.KmlLayer({
+          url,
+          map,
+          preserveViewport: false,
+          suppressInfoWindows: false
+        });
+        layer.addListener("status_changed", () => {
+          const st = layer.getStatus && layer.getStatus();
+          console.log("KML status:", st, "url:", url);
+          onStatus?.(st, layer);
+        });
+        return layer;
+      }
+
+      // 1) KMZ を試す
+      let activeLayer = addKmlLayer(kmzUrl, (status) => {
+        if (status !== "OK") {
+          // 2) 失敗したら KML にフォールバック
+          activeLayer.setMap(null);
+          activeLayer = addKmlLayer(kmlUrl, (s2) => {
+            if (s2 !== "OK") {
+              console.warn("KML/KMZ 読み込みに失敗しました。URL/公開範囲/サイズ/HTTPS等を確認してください。", s2);
+            }
+          });
+        }
       });
-
     }
-    
     window.initMap = initMap;
   </script>
 </head>
 <body>
   <div id="map"></div>
 
-  <!-- ✅ あなたのGoogle Maps JavaScript APIキーをここに入れてください -->
-  <script async
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDYJo3DLtUfuKHFUTc7c-HqwgB4H2e3p3U&callback=initMap">
-  </script>
+  <!-- あなたの Google Maps JavaScript API キーを設定（リファラに https://toshimaenatarino.github.io/* を許可） -->
+  <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDYJo3DLtUfuKHFUTc7c-HqwgB4H2e3p3U&callback=initMap&v=weekly"></script>
 </body>
 </html>
