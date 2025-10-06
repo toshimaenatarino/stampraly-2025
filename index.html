@@ -35,14 +35,23 @@
         fullscreenControl: true,
       });
 
-      // ✅ 同階層の map.kml を読み込み
+      // ✅ 同階層の map.kmz を読み込み(kmlは読み込まない)
+//      const kmlLayer = new google.maps.KmlLayer({
+//        url: window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '/map.kml'),
+//        map: map,
+//        preserveViewport: false,
+//        suppressInfoWindows: false
+//      });
+
       const kmlLayer = new google.maps.KmlLayer({
-        url: window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '/map.kml'),
-        map: map,
+        url: location.origin + location.pathname.replace(/\/[^/]*$/, '/map.kmz'),
+        map,
         preserveViewport: false,
         suppressInfoWindows: false
       });
+
     }
+    
     window.initMap = initMap;
   </script>
 </head>
