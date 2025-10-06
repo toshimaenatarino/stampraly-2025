@@ -4,33 +4,28 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>としまえんあたりの スタンプラリー 2025</title>
-
-  <!-- 検索エンジンにインデックスさせない -->
   <meta name="robots" content="noindex, nofollow" />
-
   <style>
     html, body, #map { height: 100%; margin: 0; padding: 0; }
+    .iw { font-size: 14px; line-height: 1.6; max-width: 280px; }
+    .iw .name { font-weight: 700; font-size: 15px; }
+    .iw .meta { color:#555; }
+    .iw a { word-break: break-all; }
   </style>
-
   <script>
-    // 既存POIを消すスタイル
     const HIDE_POI_STYLE = [
       { featureType: "poi", stylers: [{ visibility: "off" }] },
       { featureType: "transit", stylers: [{ visibility: "off" }] },
       { elementType: "labels.icon", stylers: [{ visibility: "off" }] }
     ];
-
-    // GitHub Pages 上の公開URL（固定）
     const BASE_URL = "https://toshimaenatarino.github.io/stampraly-2025/";
+
+    let map, info, places;
 
     async function initMap() {
       const { Map } = await google.maps.importLibrary("maps");
-
-      // 初期中心：西武線「豊島園駅」
-      const center = { lat: 35.7416, lng: 139.6515 };
-
-      const map = new Map(document.getElementById("map"), {
-        center,
+      map = new Map(document.getElementById("map"), {
+        center: { lat: 35.7416, lng: 139.6515 }, // 豊島園駅
         zoom: 16,
         styles: HIDE_POI_STYLE,
         streetViewControl: false,
@@ -39,46 +34,121 @@
         gestureHandling: "greedy",
       });
 
-      // ---- KML/KMZ レイヤ読込（KMZ → 失敗時にKMLへフォールバック）----
-      const version = Date.now().toString(); // キャッシュバスター
-      const kmzUrl = `${BASE_URL}map.kmz?v=${version}`;
-      const kmlUrl = `${BASE_URL}map.kml?v=${version}`;
+      info = new google.maps.InfoWindow();
 
-      function addKmlLayer(url, onStatus) {
+      // ---- KML/KMZ レイヤ（まず KMZ、ダメなら KML） ----
+      const ver = Date.now().toString(); // キャッシュバスター
+      const kmzUrl = `${BASE_URL}map.kmz?v=${ver}`;
+      const kmlUrl = `${BASE_URL}map.kml?v=${ver}`;
+
+      function addLayer(url, onStatus) {
         const layer = new google.maps.KmlLayer({
           url,
           map,
           preserveViewport: false,
-          suppressInfoWindows: false
+          suppressInfoWindows: true, // ← 標準の吹き出しは抑止して自前で出す
         });
-        layer.addListener("status_changed", () => {
-          const st = layer.getStatus && layer.getStatus();
-          console.log("KML status:", st, "url:", url);
-          onStatus?.(st, layer);
-        });
+        layer.addListener("status_changed", () => onStatus?.(layer.getStatus?.(), layer));
+        // クリックで Places 詳細を出す
+        layer.addListener("click", onKmlClick);
         return layer;
       }
 
-      // 1) KMZ を試す
-      let activeLayer = addKmlLayer(kmzUrl, (status) => {
-        if (status !== "OK") {
-          // 2) 失敗したら KML にフォールバック
-          activeLayer.setMap(null);
-          activeLayer = addKmlLayer(kmlUrl, (s2) => {
-            if (s2 !== "OK") {
-              console.warn("KML/KMZ 読み込みに失敗しました。URL/公開範囲/サイズ/HTTPS等を確認してください。", s2);
+      let active = addLayer(kmzUrl, (st, l) => {
+        if (st !== "OK") {
+          l.setMap(null);
+          active = addLayer(kmlUrl, (st2) => {
+            if (st2 !== "OK") {
+              console.warn("KML/KMZ 読み込み失敗:", st2);
             }
           });
         }
       });
     }
+
+    // KMLクリック → Placesで詳細を引く（失敗したらKMLの説明にフォールバック）
+    function onKmlClick(e) {
+      const name = e.featureData?.name || "場所";
+      const desc = e.featureData?.description || "";
+      const pos = e.latLng;
+
+      info.setContent(`<div class="iw">読み込み中…</div>`);
+      info.setPosition(pos);
+      info.open({ map });
+
+      // Places のサービス（古典API、libraries=places を使用）
+      const service = new google.maps.places.PlacesService(map);
+
+      // 近傍テキスト検索（名称＋位置バイアス）
+      service.textSearch(
+        { query: name, location: pos, radius: 250 },
+        (results, status) => {
+          if (status === google.maps.places.PlacesServiceStatus.OK && results?.length) {
+            const top = results[0]; // 最上位を採用（必要なら名称一致や距離で絞り込み）
+            service.getDetails(
+              {
+                placeId: top.place_id,
+                fields: [
+                  "name",
+                  "rating",
+                  "formatted_address",
+                  "formatted_phone_number",
+                  "opening_hours",
+                  "website",
+                  "url",
+                ],
+              },
+              (place, s2) => {
+                if (s2 === google.maps.places.PlacesServiceStatus.OK && place) {
+                  info.setContent(renderPlaceHtml(place, desc));
+                } else {
+                  // 詳細が取れなければ KML の説明に戻す
+                  info.setContent(renderFallbackHtml(name, desc));
+                }
+              }
+            );
+          } else {
+            // 検索で見つからなければ KML の説明
+            info.setContent(renderFallbackHtml(name, desc));
+          }
+        }
+      );
+    }
+
+    function renderPlaceHtml(p, descHtml) {
+      const lines = [];
+      lines.push(`<div class="iw">`);
+      lines.push(`<div class="name">${esc(p.name || "")}</div>`);
+      if (p.rating) lines.push(`<div class="meta">★ ${p.rating.toFixed(1)} / 5</div>`);
+      if (p.formatted_address) lines.push(`<div>${esc(p.formatted_address)}</div>`);
+      if (p.formatted_phone_number) lines.push(`<div>☎ ${esc(p.formatted_phone_number)}</div>`);
+      if (p.opening_hours?.weekday_text) {
+        lines.push(`<details><summary>営業時間</summary><div>`);
+        for (const w of p.opening_hours.weekday_text) lines.push(`${esc(w)}<br>`);
+        lines.push(`</div></details>`);
+      }
+      if (p.website) lines.push(`<div>Web: <a href="${p.website}" target="_blank" rel="noopener">${p.website}</a></div>`);
+      if (p.url) lines.push(`<div><a href="${p.url}" target="_blank" rel="noopener">Google マップで開く</a></div>`);
+      // もともとの My Maps の説明があれば併記
+      if (descHtml) lines.push(`<hr>${descHtml}`);
+      lines.push(`</div>`);
+      return lines.join("");
+    }
+
+    function renderFallbackHtml(name, descHtml) {
+      return `<div class="iw"><div class="name">${esc(name)}</div>${descHtml ? `<div>${descHtml}</div>` : ""}</div>`;
+    }
+
+    function esc(s) {
+      return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    }
+
     window.initMap = initMap;
   </script>
 </head>
 <body>
   <div id="map"></div>
-
-  <!-- あなたの Google Maps JavaScript API キーを設定（リファラに https://toshimaenatarino.github.io/* を許可） -->
-  <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDYJo3DLtUfuKHFUTc7c-HqwgB4H2e3p3U&callback=initMap&v=weekly"></script>
+  <!-- Places ライブラリを読み込む（必須） -->
+  <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDYJo3DLtUfuKHFUTc7c-HqwgB4H2e3p3U&callback=initMap&v=weekly&libraries=places"></script>
 </body>
 </html>
