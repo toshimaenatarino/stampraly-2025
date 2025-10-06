@@ -48,8 +48,8 @@
 
       // ---- KML/KMZ レイヤ読込（KMZ → 失敗でKML） ----
       const ver = Date.now().toString(); // キャッシュバスター
-      const kmzUrl = `${BASE_URL}map_2510062042.kmz?v=${ver}`;
-      const kmlUrl = `${BASE_URL}map_2510062042.kml?v=${ver}`;
+      const kmzUrl = `${BASE_URL}map.kmz?v=${ver}`; //map_2510062042.kmz
+      const kmlUrl = `${BASE_URL}map.kml?v=${ver}`; //map_2510062042.kml
 
       function addLayer(url, onStatus) {
         const layer = new google.maps.KmlLayer({
