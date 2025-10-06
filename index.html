@@ -139,17 +139,18 @@
       );
     }
 
-    // Balloon HTML から data-place_id を取り出す
     function extractPlaceId(infoWindowHtml) {
       if (!infoWindowHtml) return "";
-      const m = infoWindowHtml.match(/data-place_id\s*=\s*["']([^"']+)["']/i);
-      return m ? m[1] : "";
-      // DOMパースで厳密にやる場合は以下でもOK
-      // const div = document.createElement('div');
-      // div.innerHTML = infoWindowHtml;
-      // const node = div.querySelector('.pid[data-place_id]');
-      // return node?.getAttribute('data-place_id') || '';
+      // 1) 正規表現（ハイフン/アンダースコア両対応）
+      let m = infoWindowHtml.match(/data-place[-_]id\s*=\s*["']([^"']+)["']/i);
+      if (m && m[1]) return m[1];
+      // 2) DOM パース（保険）
+      const div = document.createElement('div');
+      div.innerHTML = infoWindowHtml;
+      const node = div.querySelector('.pid[data-place-id], .pid[data-place_id]');
+      return node?.getAttribute('data-place-id') || node?.getAttribute('data-place_id') || '';
     }
+
 
     // Places 詳細 + KML説明をまとめて描画
     function renderPlaceHtml(p, descHtml, kmlDisplayName) {
