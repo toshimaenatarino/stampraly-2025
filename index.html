@@ -15,7 +15,6 @@
     .iw .meta { color:#555; margin-bottom: 4px; }
     .iw details { margin: 6px 0; }
     .iw a { word-break: break-all; }
-    /* 万が一 infoWindowHtml 側の hidden要素が混入しても表示させない保険 */
     .iw .pid,
     .iw [data-place-id],
     .iw [data-place_id] { display: none !important; visibility: hidden !important; }
@@ -41,10 +40,6 @@
       return s ? s.replace(PID_TOKEN_STRIP_RE, ' ').replace(/\\s{2,}/g, ' ').trim() : s;
     }
 
-    function esc(s) {
-      return String(s).replace(/[&<>\"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',\"'\":'&#39;'}[m]));
-    }
-
     async function initMap() {
       const { Map } = await google.maps.importLibrary("maps");
 
@@ -63,8 +58,8 @@
 
       // ---- KML/KMZ レイヤ読込（KMZ → 失敗でKML） ----
       const ver = Date.now().toString(); // キャッシュバスター
-      const kmzUrl = `${BASE_URL}map.kmz?v=${ver}`; // map_2510062042.kmz
-      const kmlUrl = `${BASE_URL}map.kml?v=${ver}`; // map_2510062042.kml
+      const kmzUrl = `${BASE_URL}map.kmz?v=${ver}`; //map_2510062042.kmz
+      const kmlUrl = `${BASE_URL}map.kml?v=${ver}`; //map_2510062042.kml
 
       function addLayer(url, onStatus) {
         const layer = new google.maps.KmlLayer({
@@ -95,7 +90,6 @@
       });
     }
 
-    // --- KMLのクリック → Place ID優先でPlaces詳細、無ければ近傍検索、最終的にKML説明にフォールバック ---
     function onKmlClick(e) {
       const rawName = e.featureData?.name || "場所";
       const rawDesc = e.featureData?.description || "";
@@ -106,74 +100,62 @@
       const name = stripPidToken(rawName);
       const desc = stripPidToken(rawDesc);
 
-      info.setContent(`<div class="iw"><div class="name">${esc(name)}</div>${desc ? `<div>${desc}</div>` : ""}<div class="meta">読み込み中…</div></div>`);
+      info.setContent(`<div class="iw"><div class="title">${name}</div><div class="desc">${desc || ""}</div><div class="loading">読み込み中...</div></div>`);
       info.setPosition(pos);
       info.open({ map });
 
       const service = new google.maps.places.PlacesService(map);
 
-      // 抽出は raw から（属性 → name → description の三段構え）
+      // 抽出は raw から（既存の三段構えを活用）
       const pid = extractPlaceId(html, rawName, rawDesc);
       if (pid) {
-        getPlaceDetailsById(service, pid, desc, name);
-        return;
+      // 詳細取得へ（表示側には clean を渡す）
+      getPlaceDetailsById(service, pid, desc, name);
+      return;
       }
 
-      // 2) Place IDが無いピン → 名称を使って近傍テキスト検索 → 詳細
-      service.textSearch(
-        { query: name, location: pos, radius: 50 }, // 半径を 50m に縮小（誤ヒット低減）
-        (results, status) => {
-          if (status === google.maps.places.PlacesServiceStatus.OK && results?.length) {
-            getPlaceDetailsById(service, results[0].place_id, desc, name);
-          } else {
-            info.setContent(renderFallbackHtml(name, desc));
-          }
-        }
-      );
+      // 近傍テキスト検索のクエリにも PID が混ざらないよう clean を使用
+      nearbyTextSearch(service, name, pos, desc);
     }
 
-    // Place IDで詳細取得して表示（表示は clean を使う）
-    function getPlaceDetailsById(service, placeId, cleanDesc, cleanName) {
-      service.getDetails(
-        {
-          placeId,
-          fields: [
-            "name",
-            "rating",
-            "formatted_address",
-            "formatted_phone_number",
-            "opening_hours",
-            "website",
-            "url",
-          ],
-        },
-        (place, status) => {
-          if (status === google.maps.places.PlacesServiceStatus.OK && place) {
-            info.setContent(renderPlaceHtml(place, cleanDesc, cleanName));
-          } else {
-            info.setContent(renderFallbackHtml(cleanName, cleanDesc));
-          }
-        }
-      );
-    }
+  function getPlaceDetailsById(service, placeId, cleanDesc, cleanName) {
+    service.getDetails({ placeId, fields: ["name","rating","formatted_address","opening_hours","photos","place_id","geometry"] }, (place, status) => {
+      if (status !== google.maps.places.PlacesServiceStatus.OK || !place) {
+        // 失敗時も clean を表示
+        info.setContent(`<div class="iw"><div class="title">${cleanName}</div><div class="desc">${cleanDesc || ""}</div><div class="warn">詳細を取得できませんでした。</div></div>`);
+        return;
+      }
+      // Googleの place.name には PID は入らないが、保険で strip しておく
+      const title = stripPidToken(cleanName || place.name || "名称未設定");
+
+      info.setContent(`
+        <div class="iw">
+          <div class="title">${title}</div>
+          <div class="addr">${place.formatted_address || ""}</div>
+          ${place.rating ? `<div class="rating">★ ${place.rating}</div>` : ""}
+          ${cleanDesc ? `<div class="desc">${cleanDesc}</div>` : ""}
+        </div>
+      `);
+    });
+  }
 
     function extractPlaceId(infoWindowHtml, kmlName, kmlDesc) {
       // 0) 正規表現ヘルパ
       const pickFromToken = (s) => {
-        if (!s) return "";
-        const m = s.match(/\\[PID:([A-Za-z0-9_\\-]+)\\]/); // URL-safe文字のみ
-        return m ? m[1] : "";
+      if (!s) return "";
+      const m = s.match(/\[PID:([A-Za-z0-9_\-]+)\]/); // URL-safe文字のみ
+      return m ? m[1] : "";
       };
 
       // 1) infoWindowHtml の data-*（残っていれば最優先）
       if (infoWindowHtml) {
-        let m = infoWindowHtml.match(/data-place[-_]id\\s*=\\s*["']([^"']+)["']/i);
-        if (m?.[1]) return m[1];
-        const div = document.createElement('div');
-        div.innerHTML = infoWindowHtml;
-        const node = div.querySelector('.pid[data-place-id], .pid[data-place_id]');
-        const pid = node?.getAttribute('data-place-id') || node?.getAttribute('data-place_id') || '';
-        if (pid) return pid;
+      let m = infoWindowHtml.match(/data-place[-_]id\s*=\s*["']([^"']+)["']/i);
+      if (m?.[1]) return m[1];
+      const div = document.createElement('div');
+      div.innerHTML = infoWindowHtml;
+      const node = div.querySelector('.pid[data-place-id], .pid[data-place_id]');
+      const pid = node?.getAttribute('data-place-id') || node?.getAttribute('data-place_id') || '';
+      if (pid) return pid;
       }
 
       // 2) KML の name に [PID:...] があれば使う
@@ -187,13 +169,15 @@
       return "";
     }
 
-    // Places 詳細 + KML説明をまとめて描画（desc は HTML を許可・PIDは除去済を前提で渡す）
+
+    // Places 詳細 + KML説明をまとめて描画
     function renderPlaceHtml(p, descHtml, kmlDisplayName) {
       const lines = [];
       lines.push(`<div class="iw">`);
-      // 表示タイトルは KML 名（clean）を優先。必要なら “(Google名: …)” 併記も可能。
+      // 表示タイトルは KML 名を優先。必要なら後段で “(Google名: …)” を併記できます。
       const displayName = kmlDisplayName || p.name || "";
       lines.push(`<div class="name">${esc(displayName)}</div>`);
+      // もし両方見せたい場合は下行のコメントを外してください：
       // if (p.name && kmlDisplayName && p.name !== kmlDisplayName) lines.push(`<div class="meta">(Google名: ${esc(p.name)})</div>`);
       if (p.rating) lines.push(`<div class="meta">★ ${Number(p.rating).toFixed(1)} / 5</div>`);
       if (p.formatted_address) lines.push(`<div>${esc(p.formatted_address)}</div>`);
@@ -205,18 +189,19 @@
       }
       if (p.website) lines.push(`<div>Web: <a href="${p.website}" target="_blank" rel="noopener">${p.website}</a></div>`);
       if (p.url) lines.push(`<div><a href="${p.url}" target="_blank" rel="noopener">Google マップで開く</a></div>`);
-      if (descHtml) {
-        // 念のため二重で PID を除去
-        const cleanDescBlock = stripPidToken(descHtml);
-        lines.push(`<hr>${cleanDescBlock}`);
-      }
+      if (descHtml) lines.push(`<hr>${descHtml}`);
       lines.push(`</div>`);
       return lines.join("");
     }
 
-    // フォールバック（KMLの name/description のみ、どちらも clean 済みが渡ってくる想定）
+    // フォールバック（KMLの name/description のみ）
     function renderFallbackHtml(name, descHtml) {
       return `<div class="iw"><div class="name">${esc(name)}</div>${descHtml ? `<div>${descHtml}</div>` : ""}</div>`;
+    }
+
+    // 簡易エスケープ
+    function esc(s) {
+      return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
     }
 
     // グローバル公開
